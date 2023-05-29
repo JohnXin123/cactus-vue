@@ -6,7 +6,7 @@ export const useUserStore = defineStore('user', () => {
     function getUserLists() {
         return new Promise((resolve, reject) => {
 
-            HTTP.get("users")
+            HTTP.get("api/v1/users")
             .then((response) => {
                 resolve(response);
             })
@@ -16,17 +16,18 @@ export const useUserStore = defineStore('user', () => {
         });
     }
 
-    function createUserList(name) {
+    function createUserList(input) {
 
         return new Promise((resolve, reject) => {
             
             const parameter = {
-                name,
-                email,
-                password
+                name : input.value.name,
+                email : input.value.email,
+                password : input.value.password,
+                password_confirmation: input.value.confirmPassword,
             };
 
-            HTTP.post("users/store", parameter)
+            HTTP.post("api/v1/users", parameter)
             .then( response => resolve(response))
             .catch( error => reject(error));
 
@@ -40,10 +41,12 @@ export const useUserStore = defineStore('user', () => {
             const parameter = {
                 id: data.id,
                 name: data.name,
-                email: data.email
+                email: data.email,
+                password : data.password,
+                password_confirmation: data.confirmPassword,
             };
 
-            HTTP.put(`/users/update/${data.id}`, parameter)
+            HTTP.put(`api/v1/users/${data.id}`, parameter)
             .then( response => resolve(response))
             .catch( error => reject(error));
         
@@ -54,7 +57,7 @@ export const useUserStore = defineStore('user', () => {
 
         return new Promise((resolve, reject) => {
 
-            HTTP.delete(`users/destory/${id}`)
+            HTTP.delete(`api/v1/users/${id}`)
             .then( response => resolve(response))
             .catch( error => reject(error));
 

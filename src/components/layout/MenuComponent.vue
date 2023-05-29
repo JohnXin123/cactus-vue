@@ -1,8 +1,33 @@
+<script setup>
+import { useToast } from 'vue-toastification'
+import { useLoginStore } from '@/stores/loginStore';
+import useVuelidate from '@vuelidate/core'
+import { useRouter } from 'vue-router';
+
+const toast = useToast();
+const loginStore = useLoginStore();
+const router = useRouter();
+
+let logout = async () => {
+  await loginStore.logout()
+  .then( () => {
+      toast.success("Successfully Logout");
+
+      router.push({ name: 'login' });
+  } )
+  .catch( error => {
+      console.log(error);
+      toast.error('Axios Error');
+  })   
+}
+
+</script>
+
 <template>
     <header class="bg-slate-100 border-b-2 border-solid border-slate-200 drop-shadow-sm fixed top-0 w-full z-10">
         <nav class="flex justify-between container items-center mx-auto py-6">
             <div class="font-bold text-2xl max-[1024px]:text-xl uppercase">
-                <h1>Point Of Sale(POS)</h1>
+                <h1>User Dashboard</h1>
             </div>
             <div class="flex gap-4 items-center text-2xl text-slate-900">
                 
@@ -19,7 +44,7 @@
                 </svg>
               
 
-              <button class="bg-blue-700 px-3 py-2 rounded-full text-sm text-slate-50">Logout</button>
+              <button class="bg-blue-700 px-3 py-2 rounded-full text-sm text-slate-50" @click="logout">Logout</button>
             </div>
         </nav>
     </header>

@@ -14,13 +14,15 @@ const toast = useToast();
 const isloaded = ref(false);
 const editName = ref(user.editUserData.name);
 const editEmail = ref(user.editUserData.email);
+const password = ref();
+const confirmPassword = ref();
 
 const validations = {
     editName: {required: helpers.withMessage('The name field is required', required)},
     editEmail: {required: helpers.withMessage('The email field is required', required)}
 };
 
-const v$ = useVuelidate(validations, { editName });
+const v$ = useVuelidate(validations, { editName,editEmail });
 
 let updateUser = async () => {
 
@@ -31,7 +33,9 @@ let updateUser = async () => {
         let parameter = {
             name: editName.value,
             email: editEmail.value,
-            id: user.editUserData.id
+            id: user.editUserData.id,
+            password: password.value,
+            confirmPassword: confirmPassword.value,
         };
         await userStore.editUserList(parameter)
         .then( () => {
@@ -69,15 +73,27 @@ let closeModel = () => emit('user-edit-close-status');
                         <div class="flex flex-col items-start pb-3">
                             <label for="" class="px-3 p-2">Name</label>
                             <input type="text" v-model="editName" class="w-full bg-slate-200 px-4 ring-1 rounded-full focus:outline-none h-10"
-                            placeholder="Enter Category Name">
+                            placeholder="Enter  Name">
                             <span v-if="v$.editName.$error" class="px-2 text-red-500">{{ v$.editName.$errors[0].$message }}</span>
                         </div>
 
                         <div class="flex flex-col items-start pb-3">
                             <label for="" class="px-3 p-2">Email</label>
                             <input type="text" v-model="editEmail" class="w-full bg-slate-200 px-4 ring-1 rounded-full focus:outline-none h-10"
-                            placeholder="Enter Category Name">
+                            placeholder="Enter Email">
                             <span v-if="v$.editEmail.$error" class="px-2 text-red-500">{{ v$.editEmail.$errors[0].$message }}</span>
+                        </div>
+                        
+                        <div class="flex flex-col items-start gap-2 mt-6">
+                            <label for="" class="px-3 text-sm uppercase font-medium">Password</label>
+                            <input type="password" class="ring-1 bg-slate-200 focus:outline-none w-full h-10 
+                            rounded-full px-6" placeholder="**********" v-model="password">
+                        </div>
+
+                        <div class="flex flex-col items-start gap-2 mt-6">
+                            <label for="" class="px-3 text-sm uppercase font-medium">Confirm Password</label>
+                            <input type="password" class="ring-1 bg-slate-200 focus:outline-none w-full h-10 
+                            rounded-full px-6" placeholder="**********" v-model="confirmPassword">
                         </div>
                         
                         <div class="flex gap-4 pt-4">

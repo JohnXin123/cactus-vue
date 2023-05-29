@@ -4,16 +4,32 @@ import { computed, ref } from 'vue';
 
 export const useLoginStore = defineStore('login', () => {
 
-    const isLogged = ref(false);
+    const isLogged = ref(JSON.parse(localStorage.getItem('isLogged')) || false);
 
-    const isLoggedIn = computed( () => isLogged.value);
+    const token = ref(localStorage.getItem('token') || null);
 
-    function authenticate() {
+    let isLoggedIn = computed( () => isLogged.value);
+
+    let tokenValue = computed( () => 'Bearer ' + token.value);
+
+    function authenticate(input) {
 
         return new Promise((resolve, reject) => {
 
-            HTTP.get("category-list")
+            const parameter = {
+                email : input.value.email,
+                password : input.value.password,
+            };
+
+            HTTP.post("api/v1/authenticate", parameter)
                 .then((response) => {
+
+                    localStorage.setItem('isLogged', true);
+                    localStorage.setItem('token', response.data.data);
+
+                    isLogged.value = true;
+                    tokenValue.value = response.data.data;
+
                     resolve(response);
                 })
                 .catch((error) => {
@@ -22,17 +38,43 @@ export const useLoginStore = defineStore('login', () => {
             });
     }
 
-    // function testForPersist(value) {
+    function register(input) {
 
-    //     this.persistState(value);
+        return new Promise((resolve, reject) => {
 
-    //     return 'success';
-    // }
+            const parameter = {
+                name : input.value.name,
+                email : input.value.email,
+                password : input.value.password,
+                password_confirmation: input.value.confirmPassword,
+            };
 
-    // function persistState() {
+            HTTP.post("api/v1/register", parameter)
+            .then( response => resolve(response))
+            .catch( error => reject(error));
 
-    //     localStorage.setItem('counter', JSON.stringify(this.$state));
-    // }
+        });
+    }
 
-    return { isLoggedIn, authenticate};
+    function logout() {
+
+        return new Promise((resolve, reject) => {
+
+            HTTP.post("api/v1/logout")
+            .then((response) => {
+
+                localStorage.setItem('isLogged', false);
+                localStorage.setItem('token', "");
+
+                isLogged.value = false;
+                tokenValue.value = "";
+
+                resolve(response);
+            })
+            .catch( error => reject(error));
+
+        });
+    }
+
+    return { isLoggedIn,tokenValue, authenticate, register,logout};
 })

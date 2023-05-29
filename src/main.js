@@ -34,7 +34,7 @@ router.beforeEach((to, from, next) => {
 	}
 
 	if (to.meta.isAuthRoute && loginStore.isLoggedIn) {
-			next({ name: 'dashboard'});
+		next({ name: 'home'});
 	}
 		
 	next();
